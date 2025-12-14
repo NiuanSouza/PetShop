@@ -1,0 +1,130 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
+  password     String
+  name         String?
+  phone        String?
+  address      String?
+  avatarUrl    String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  orders       Order[]
+  myPets       MyPet[]
+  appointments Appointment[]
+}
+
+/// Animal à venda / adoção na loja
+model Pet {
+  id          Int      @id @default(autoincrement())
+  name        String
+  species     String   // cachorro, gato, peixe, ave, roedor
+  breed       String?
+  age         Int?
+  price       Decimal  @db.Decimal(10, 2)
+  description String?
+  imageUrl    String?
+  status      String   @default("disponivel") // disponivel, reservado, vendido
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+/// Pet cadastrado pelo cliente (ex: "meu cachorro Rex")
+model MyPet {
+  id           Int           @id @default(autoincrement())
+  name         String
+  species      String
+  breed        String?
+  age          Int?
+  weight       Decimal?      @db.Decimal(5, 2)
+  imageUrl     String?
+  notes        String?
+  user         User          @relation(fields: [userId], references: [id])
+  userId       Int
+  appointments Appointment[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  imageUrl String?
+  products Product[]
+}
+
+model Brand {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  products Product[]
+}
+
+model Product {
+  id          Int         @id @default(autoincrement())
+  name        String
+  price       Decimal     @db.Decimal(10, 2)
+  description String?
+  imageUrl    String?
+  stock       Int         @default(0)
+  species     String?     // cachorro, gato, peixe, ave, roedor, null = universal
+  category    Category    @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  brand       Brand       @relation(fields: [brandId], references: [id])
+  brandId     Int
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  orderItems  OrderItem[]
+}
+
+model Service {
+  id           Int           @id @default(autoincrement())
+  name         String
+  description  String?
+  price        Decimal       @db.Decimal(10, 2)
+  duration     Int           // duração em minutos
+  imageUrl     String?
+  serviceType  String        // banho, tosa, veterinaria, vacinacao, hospedagem
+  appointments Appointment[]
+}
+
+model Appointment {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  service   Service  @relation(fields: [serviceId], references: [id])
+  serviceId Int
+  myPet     MyPet    @relation(fields: [myPetId], references: [id])
+  myPetId   Int
+  dateTime  DateTime
+  status    String   @default("pendente") // pendente, confirmado, concluido, cancelado
+  notes     String?
+  createdAt DateTime @default(now())
+}
+
+model Order {
+  id        Int         @id @default(autoincrement())
+  user      User        @relation(fields: [userId], references: [id])
+  userId    Int
+  createdAt DateTime    @default(now())
+  items     OrderItem[]
+  total     Decimal     @db.Decimal(10, 2)
+  status    String      @default("pendente")
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  order     Order   @relation(fields: [orderId], references: [id])
+  orderId   Int
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
+  quantity  Int     @default(1)
+  price     Decimal @db.Decimal(10, 2)
+}

@@ -1,0 +1,19 @@
+import { PrismaClient } from '@prisma/client';
+
+/**
+ * Singleton do PrismaClient para evitar múltiplas conexões ao banco.
+ * Cada instância separada cria um pool de conexões próprio —
+ * em produção isso esgota os limites do banco (ex: Aiven free tier).
+ */
+
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
+
+export const prisma =
+  globalForPrisma.prisma ??
+  new PrismaClient({
+    log: process.env.NODE_ENV === 'development' ? ['query', 'error', 'warn'] : ['error'],
+  });
+
+if (process.env.NODE_ENV !== 'production') {
+  globalForPrisma.prisma = prisma;
+}

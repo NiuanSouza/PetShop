@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+# Backend será executado localmente usando pnpm; não há contêiner Docker para o backend.
+# Use "pnpm install" e "pnpm dev" dentro da pasta Back-End para iniciar o servidor.
+
+  frontend:
+    build:
+      context: ./Front-End
+      dockerfile: Dockerfile
+    container_name: petshop_frontend
+    ports:
+      - "8000:80"
+    volumes:
+      - ./frontend:/var/www/html
+    env_file:
+      - .env.frontend
+
+  db:
+    image: postgres:15
+    container_name: petshop_db
+    environment:
+      POSTGRES_USER: pguser
+      POSTGRES_PASSWORD: pgpassword
+      POSTGRES_DB: petshop
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:

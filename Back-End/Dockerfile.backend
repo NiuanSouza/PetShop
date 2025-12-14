@@ -1,0 +1,22 @@
+FROM node:18-alpine AS base
+WORKDIR /app
+
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Copy package files and install dependencies
+COPY package.json pnpm-lock.yaml* .
+COPY Back-End/package.json ./Back-End/package.json
+COPY Back-End/pnpm-workspace.yaml ./Back-End/pnpm-workspace.yaml || true
+RUN pnpm install --frozen-lockfile
+
+# Copy source
+COPY Back-End ./Back-End
+
+# Generate Prisma client & seed
+WORKDIR /app/Back-End
+RUN pnpm prisma:generate && pnpm prisma:seed
+
+# Expose port and start server
+EXPOSE 3000
+CMD ["pnpm", "dev"]
