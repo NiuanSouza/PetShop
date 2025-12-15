@@ -1,0 +1,10 @@
+{
+    "name": "villares/mvc",
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/",
+            "Core\\": "core/"
+        }
+    },
+    "require": {}
+}
