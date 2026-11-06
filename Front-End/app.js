@@ -262,12 +262,6 @@ route('/animais', async (app) => {
 });
 
 // ── ANIMAL DETAIL ──
-route('/animais', async (app, params) => {
-  if (!params || !params[0]) return;
-  // This is handled by the dynamic route below
-});
-
-// Dynamic route for animal detail
 route('/detail', async (app, params) => {});
 
 // ── PRODUTOS ──

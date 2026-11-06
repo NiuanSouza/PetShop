@@ -1,22 +1,18 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
-# Set working directory
 WORKDIR /app
 
-# Install pnpm globally
-RUN npm install -g pnpm
+RUN apk add --no-cache openssl
 
-# Copy package files
-COPY package.json pnpm-lock.yaml* ./
+COPY package*.json ./
+RUN npm install --omit=dev
 
-# Install dependencies
-RUN pnpm install
+COPY prisma ./prisma
+RUN npx prisma generate
 
-# Copy rest of the source code
-COPY . .
+COPY dist ./dist
 
-# Expose the application port (default Express)
-EXPOSE 3000
+ENV PORT=3002
+EXPOSE 3002
 
-# Default command (will be overridden by docker-compose if needed)
-CMD ["pnpm", "run", "dev"]
+CMD ["node", "dist/index.js"]

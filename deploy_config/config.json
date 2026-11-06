@@ -1,0 +1,22 @@
+{
+  "orderId": 6,
+  "liveUrl": "https://niuansouza.duckdns.org/petshop/",
+  "description": "Plataforma completa de Pet Shop e Clínica Veterinária com agendamento de serviços, catálogo de animais para adoção/venda, e-commerce de rações e acessórios, gestão de pets do cliente e autenticação JWT. Desenvolvido com Node.js, Express, Prisma ORM, PostgreSQL e Vanilla JS SPA.",
+  "imagesCount": 5,
+  "technologies": {
+    "frontend": [
+      "HTML5",
+      "CSS3",
+      "JavaScript",
+      "SPA"
+    ],
+    "backend": [
+      "Node.js",
+      "Express",
+      "Prisma ORM",
+      "PostgreSQL",
+      "TypeScript",
+      "JWT"
+    ]
+  }
+}
